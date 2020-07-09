@@ -1,0 +1,13 @@
+*.annot
+*.cmo
+*.cma
+*.cmi
+*.a
+*.o
+*.cmx
+*.cmxs
+*.cmxa
+*.byte
+
+# ocamlbuild working directory
+_build/

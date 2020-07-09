@@ -1,0 +1,18 @@
+familiariser avec le mu-calcul
+
+
+relation d'équivalence de processus
+
+
+> définir de nouvelles relations d'équivalence
+
+définir les fonctions
+
+croissante décroissante
+
+additive pour union f(a+b)=f(a)+f(b)
+
+
+> notion de variance 
+
+formule -> variance
