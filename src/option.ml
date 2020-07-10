@@ -4,9 +4,13 @@ let in_channel = ref (stdin)
 
 let compute_variance = ref false
 
+let smaller = ref false
+
 let () = Arg.parse
     [
      "-compute_variance", Set(compute_variance), "compute the variance of the input formula";
+     "-smaller", Set(smaller), "compares two variances";
+  
   
 ]
 

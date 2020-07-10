@@ -1,5 +1,5 @@
 open Variance_syntax
-
+(*
 type mu_type = 
   | Ground
   | Arrow of mu_type * variance * mu_type
@@ -18,3 +18,4 @@ type formula =
   | Mu of variable * mu_type * formula
   | Application of transformer * formula
   | Lambda of variable * variance * formula
+*)

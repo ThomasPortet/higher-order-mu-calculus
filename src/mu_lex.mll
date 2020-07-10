@@ -1,6 +1,6 @@
 {
 open Variance_syn
-open Variance_yacc
+open Mu_yacc
 
 
 let keywords = Hashtbl.create 30
@@ -14,7 +14,9 @@ let _ =
       ("variable", TK_VARIABLE);
       ("none", TK_NONE;
       ("any", TK_ANY);
-      ("inter",TK_INTER);
-      ("union",TK_UNION);
+      ("inter", TK_INTER);
+      ("union", TK_UNION);
+      ("variance", TK_VARIANCE);
+      ("tau", TK_TAU);
       
     |]

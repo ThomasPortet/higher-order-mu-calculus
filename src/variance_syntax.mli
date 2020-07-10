@@ -8,6 +8,8 @@ type variance  =
   (* duals of previous variances*)
   | Antitone
   | NJoin 
-  | Nmeet
+  | NMeet
   | NAdditive
-    
+  
+val variance_from_string : string -> variance
+val to_string : variance -> string
