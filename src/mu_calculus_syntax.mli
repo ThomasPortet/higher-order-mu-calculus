@@ -1,5 +1,5 @@
 open Variance_syntax
-(*
+
 type var = string
 
 type mu_type = 
@@ -7,20 +7,23 @@ type mu_type =
   | Arrow of mu_type * variance * mu_type
 
 type predicate = 
-  | PreVariable
+  | PreVariable of var(*     for higher order
   | Transformer of transformer
 
-type transformer = 
+type transformer =
    predicate -> predicate
-
+*)
 
 type formula =
   | True
-  | Diamond of var * formula
+  | Bottom
+  | Diamond of var * (* * int for polyadic * *) formula
+  | Box of var * (* * int for polyadic * *) formula
   | Inter of formula * formula
+  | Union of formula * formula 
   | Neg of formula
   | Pre of predicate
-  | Mu of predicate * mu_type * formula
-  | Application of transformer * formula
-  | Lambda of predicate * variance * formula
-*)
+  | Mu of var * mu_type * formula
+  | Nu of var * mu_type * formula (*
+  | Application of transformer * formula list  
+  | Lambda of var list * variance list * formula      for higher order*)

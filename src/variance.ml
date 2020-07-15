@@ -72,6 +72,7 @@ let composition (v1 : variance) (v2 : variance) : variance =
 (* returns Meet o variance *)
 let composition_meet  = composition Meet
 
-(*
+
 let compute_variance (f : formula) : variance =
-	return Any;*)
+	match f with 
+		| _ -> None
