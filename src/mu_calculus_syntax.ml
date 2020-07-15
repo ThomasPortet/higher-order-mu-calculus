@@ -1,5 +1,7 @@
 open Variance_syntax
 (*
+type var = string
+
 type mu_type = 
   | Ground
   | Arrow of mu_type * variance * mu_type

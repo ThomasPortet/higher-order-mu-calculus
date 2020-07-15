@@ -19,7 +19,7 @@ let dual (v : variance) : variance =
   		| Meet -> Join
   		| NJoin -> NMeet
   		| NMeet -> NJoin
-  		| _ -> v
+  		| _ -> v (* ? undefined cases ? *)
 
 let not (v : variance) : variance =
 	match v with
@@ -31,7 +31,7 @@ let not (v : variance) : variance =
 		| NMeet -> Meet
 		| Additive -> NAdditive
 		| NAdditive -> Additive
-		| _ -> v
+		| _ -> v (* ? undefined cases ? *)
 
 let in_additive (v : variance) : bool =
 	match v with
@@ -58,13 +58,15 @@ let composition (v1 : variance) (v2 : variance) : variance =
 	match (v1,v2) with 
 		| (None, _) |(_, None) -> None
 		| (Any, _) |(_, Any) -> Any
+		| (Monotone, _) -> v2
+		| (_, Monotone) -> v1 (* ? ? *)
+		| (Antitone, _) -> (not v2) 
+		| (_, Antitone) -> (not v1) (* ? ? *)
 		| (v1, v2) when (in_additive v1) && (in_additive v2) -> inter v1 v2
 		| (v1, v2) when (in_additive (not v1)) && (in_additive v2) -> not (inter (not v1) v2)
 		| (v1, v2) when (in_additive v1) && (in_additive (not v2)) -> not (inter (dual v1) (not v2))
-		| (v1, v2) when (in_additive (not v1)) && (in_additive (not v2)) -> inter (dual (not v1)) (not v2))
-		| (Monotone, _) -> v2
-		| (Antitone, _) -> (not v2)
-		| () 
+		| (v1, v2) when (in_additive (not v1)) && (in_additive (not v2)) -> inter (dual (not v1)) (not v2)
+		| _ -> Any (* this case should never occur *) 
 
 
 (* returns Meet o variance *)
