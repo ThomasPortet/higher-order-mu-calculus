@@ -1,4 +1,3 @@
-
 type var = string
 
 type variance  =
@@ -13,6 +12,7 @@ type variance  =
   | NJoin 
   | NMeet
   | NAdditive
+
 
 type variance_assignment = {
   variable : var;

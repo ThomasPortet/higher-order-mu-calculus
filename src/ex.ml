@@ -8,3 +8,4 @@ let formula_lambda : formula =
 *)
 let formula_simple : formula =
 	Mu("X", Ground, Union( Diamond ("a", Pre(PreVariable("p"))), Pre(PreVariable("X"))))
+

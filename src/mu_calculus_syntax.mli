@@ -23,7 +23,7 @@ type formula =
   | Union of formula * formula 
   | Neg of formula
   | Pre of predicate
-  | Mu of var * mu_type * formula
-  | Nu of var * mu_type * formula (*
+  | Mu of var * mu_type * formula (* smallest fix point *)
+  | Nu of var * mu_type * formula (* greatest fix point *) (*
   | Application of transformer * formula list  
-  | Lambda of var list * variance list * formula      for higher order*)
+  | Lambda of var * variance  * formula      for higher order*)

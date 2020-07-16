@@ -12,7 +12,7 @@ let rec smaller (v1 : variance) (v2 : variance) : bool =
 		| (v1, Additive) when (v1 == Join || v1 == Meet) -> true
 		| (v1, NAdditive) when (v1 == NJoin || v1 == NMeet) -> true
 		| (_,_) -> false
- 
+
 let dual (v : variance) : variance =
 	match v with	
  		| Join -> Meet
@@ -44,30 +44,29 @@ let in_Nadditive (v : variance) : bool =
 		| _ -> false
 
 (* should only be called between two variances either in {Join ; Meet ; Additive} or in {NJoin ; NMeet ; Nadditive}
-otherwise the intersection between two random variances isn't properly defined 
-and we return Any arbitrarily or their value if they're equal *)
+@raise Failure if v1 ^ v2 isn't properly defined *)
 let inter (v1 : variance) (v2 : variance) : variance =
 	match (v1, v2) with
 		| (v1,v2) when v1 == v2 -> v1
 		| (v1,v2) when (in_additive v1) && (in_additive v2) -> Additive
 		| (v1,v2) when (in_Nadditive v1) && (in_Nadditive v2) -> NAdditive
-		| (_,_) -> Any
+		| (_,_) ->  failwith ("Error in variances intersection : "^(v_to_string v1)^" ^ "^(v_to_string v2)^" is not defined.")
 
-
+(* 
+@raise Failure if v1 o v2 isn't properly defined *)
 let composition (v1 : variance) (v2 : variance) : variance =
 	match (v1,v2) with 
 		| (None, _) |(_, None) -> None
 		| (Any, _) |(_, Any) -> Any
 		| (Monotone, _) -> v2
-		| (_, Monotone) -> v1 (* ? ? *)
+		| (_, Monotone) -> failwith ("Error in variances composition : "^(v_to_string v1)^" o "^(v_to_string v2)^" is not defined.")
 		| (Antitone, _) -> (not v2) 
-		| (_, Antitone) -> (not v1) (* ? ? *)
+		| (_, Antitone) -> failwith ("Error in variances composition : "^(v_to_string v1)^" o "^(v_to_string v2)^" is not defined.")
 		| (v1, v2) when (in_additive v1) && (in_additive v2) -> inter v1 v2
 		| (v1, v2) when (in_additive (not v1)) && (in_additive v2) -> not (inter (not v1) v2)
 		| (v1, v2) when (in_additive v1) && (in_additive (not v2)) -> not (inter (dual v1) (not v2))
 		| (v1, v2) when (in_additive (not v1)) && (in_additive (not v2)) -> inter (dual (not v1)) (not v2)
-		| _ -> Any (* this case should never occur *) 
-
+		| _ ->  failwith ("Error in variances composition : this case should never occur !")
 
 (* returns Meet o variance *)
 let composition_meet  = composition Meet
@@ -100,9 +99,7 @@ let rec negated_variances (l : variance_assignment list) : variance_assignment l
 (* returns a list of variance assignments needed 
 or None if there are no possible variance assignments of the variables to satisfy the formula's type *)
 let variances_needed (f : formula) : (variance_assignment list) option =
-
-let rec tc (form : formula) (l : variance_assignment list) : (variance_assignment list) option =
-
+	let rec tc (form : formula) (l : variance_assignment list) : (variance_assignment list) option =
 	match form with 
 		| True -> Some(l)
  		| Bottom -> Some(negated_variances l)

@@ -41,7 +41,6 @@ let () = if Option.(!compute_variance_simple) then
   let s = match vl with 
     | Some (l) -> val_to_string l
     | None -> "no variances needed"
-  in
-
+  in 
   let () = print_string (s^"\n") in ()
 

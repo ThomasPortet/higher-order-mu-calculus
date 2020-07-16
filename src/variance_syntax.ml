@@ -11,6 +11,7 @@ type variance  =
   | NMeet
   | NAdditive
 
+
 type var = string
 
 type variance_assignment = {
@@ -19,16 +20,18 @@ type variance_assignment = {
   }
 
 let variance_from_string (s : string) : variance = 
-  if (String.equal (String.lowercase_ascii s) "none") then None else
-  if (String.equal (String.lowercase_ascii s) "monotone") then Monotone else
-  if (String.equal (String.lowercase_ascii s) "antitone") then Antitone else
-  if (String.equal (String.lowercase_ascii s) "join") then Join else
-  if (String.equal (String.lowercase_ascii s) "meet") then Meet else
-  if (String.equal (String.lowercase_ascii s) "njoin") then NJoin else
-  if (String.equal (String.lowercase_ascii s) "nmeet") then NMeet else
-  if (String.equal (String.lowercase_ascii s) "additive") then Additive else
-  if (String.equal (String.lowercase_ascii s) "nadditive") then NAdditive else
-  Any
+  match s with 
+    | s when (String.equal (String.lowercase_ascii s) "none") -> None
+    | s when (String.equal (String.lowercase_ascii s) "monotone") -> Monotone
+    | s when (String.equal (String.lowercase_ascii s) "antitone") -> Antitone
+    | s when (String.equal (String.lowercase_ascii s) "join") -> Join
+    | s when (String.equal (String.lowercase_ascii s) "meet") -> Meet
+    | s when (String.equal (String.lowercase_ascii s) "njoin") -> NJoin
+    | s when (String.equal (String.lowercase_ascii s) "nmeet") -> NMeet
+    | s when (String.equal (String.lowercase_ascii s) "additive") -> Additive
+    | s when (String.equal (String.lowercase_ascii s) "nadditive") -> NAdditive
+    | s when (String.equal (String.lowercase_ascii s) "any") -> Any
+    | _ -> failwith ("non-recognised input variance : "^s)
 
 let v_to_string (v : variance) : string = 
   match v with
@@ -42,6 +45,7 @@ let v_to_string (v : variance) : string =
     | NJoin -> "NJoin"
     | NMeet -> "NMeet"
     | NAdditive -> "NAdditive"
+
 
 let va_to_string (va : variance_assignment) : string =
   va.variable^" : "^(v_to_string va.variance)
