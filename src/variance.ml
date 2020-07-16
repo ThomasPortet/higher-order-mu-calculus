@@ -72,7 +72,49 @@ let composition (v1 : variance) (v2 : variance) : variance =
 (* returns Meet o variance *)
 let composition_meet  = composition Meet
 
-(* computes the variance of a given formula *)
-let compute_variance (f : formula) : variance =
-	match f with 
-		| _ -> None
+let rec assignment (x : var) (l : variance_assignment list) : variance option =
+  match l with
+    | [] -> None
+    | va::l when (String.equal va.variable x) -> Some(va.variance)
+    | _::l ->  assignment x l
+
+let rec replace_variance_assignment (va : variance_assignment) (l : variance_assignment list) : variance_assignment list =
+  match l with 
+    | [] -> [va]
+    | previous_assignment::l when (String.equal va.variable previous_assignment.variable) -> va::l
+    | _::l ->  replace_variance_assignment va l
+
+(* returns an optional : a list of variance assignements if the variable has been assigned the desired variance,
+returns None if it didn't because a previous variance assignment of the variable isn't compatible with the new one *)
+let assign_variance (va : variance_assignment) (l : variance_assignment list) : variance_assignment list option =
+  match (assignment va.variable l) with
+    | None -> Some (va::l)
+    | Some(previous_variance) when (smaller previous_variance va.variance) -> Some((replace_variance_assignment va l))
+    | _ -> None (* in this case, we cannot add the desired variance assignment *)
+
+let rec negated_variances (l : variance_assignment list) : variance_assignment list =
+  match l with 
+    | [] -> []
+    | va::l -> {variable = va.variable ; variance = not va.variance}::negated_variances l 
+
+(* returns a list of variance assignments needed 
+or None if there are no possible variance assignments of the variables to satisfy the formula's type *)
+let variances_needed (f : formula) : (variance_assignment list) option =
+
+let rec tc (form : formula) (l : variance_assignment list) : (variance_assignment list) option =
+
+	match form with 
+		| True -> Some(l)
+ 		| Bottom -> Some(negated_variances l)
+ 		| Neg(f) -> tc f (negated_variances l)
+		| Mu(x,tau,f) -> (match (assign_variance {variable = x ; variance = Monotone} l) with 
+							| Some (variance_assignment_list) -> tc f variance_assignment_list
+							| None -> None )(* the variance couldn't be assigned because it wasn't compatible with the previous one *)
+		| Nu(x,tau,f) -> (match (assign_variance {variable = x ; variance = Antitone} l) with 
+							| Some (variance_assignment_list) -> tc f variance_assignment_list
+							| None -> None )(* the variance couldn't be assigned because it wasn't compatible with the previous one *)
+		| _ -> Some(l) 
+	in
+	tc f []
+
+

@@ -31,13 +31,17 @@ let () = if Option.(!composition) then
   let v1 = Variance_syntax.variance_from_string s1 in 
   let v2 = Variance_syntax.variance_from_string s2 in
   let v = Variance.composition v1 v2 in
-  let s = to_string v in 
+  let s = v_to_string v in 
   let () = print_string (s^"\n") in ()
 
 
 let () = if Option.(!compute_variance_simple) then 
   let f = formula_simple in 
-  let v = compute_variance f in 
-  let s = to_string v in
+  let vl = variances_needed f in 
+  let s = match vl with 
+    | Some (l) -> val_to_string l
+    | None -> "no variances needed"
+  in
+
   let () = print_string (s^"\n") in ()
 
