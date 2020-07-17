@@ -44,3 +44,22 @@ let () = if Option.(!compute_variance_simple) then
   in 
   let () = print_string (s^"\n") in ()
 
+
+let () = if Option.(!compute_variance_untypable) then 
+  let f = formula_untypable in 
+  let vl = variances_needed f in 
+  let s = match vl with 
+    | Some (l) -> val_to_string l
+    | None -> "no variances needed"
+  in 
+  let () = print_string (s^"\n") in ()
+
+let () = if Option.(!compute_variance_lambda) then 
+  let f = formula_lambda in 
+  let vl = variances_needed f in 
+  let s = match vl with 
+    | Some (l) -> val_to_string l
+    | None -> "no variances needed"
+  in 
+  let () = print_string (s^"\n") in ()
+

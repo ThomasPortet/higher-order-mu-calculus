@@ -19,11 +19,11 @@ type formula =
   | Bottom
   | Diamond of var * (* * int for polyadic * *) formula
   | Box of var * (* * int for polyadic * *) formula
-  | Inter of formula * formula
-  | Union of formula * formula 
+  | And of formula * formula
+  | Or of formula * formula 
   | Neg of formula
   | Pre of predicate
   | Mu of var * mu_type * formula (* smallest fix point *)
   | Nu of var * mu_type * formula (* greatest fix point *) (*
-  | Application of transformer * formula list  
-  | Lambda of var * variance  * formula      for higher order*)
+  | Application of transformer * formula list  *)
+  | Lambda of var * variance  * formula      (*for higher order*)

@@ -106,11 +106,31 @@ let variances_needed (f : formula) : (variance_assignment list) option =
  		| Neg(f) -> tc f (negated_variances l)
 		| Mu(x,tau,f) -> (match (assign_variance {variable = x ; variance = Monotone} l) with 
 							| Some (variance_assignment_list) -> tc f variance_assignment_list
-							| None -> None )(* the variance couldn't be assigned because it wasn't compatible with the previous one *)
+							| None -> failwith "Error in variances computation : the formula is ill-typed")(* the variance couldn't be assigned because it wasn't compatible with the previous one *)
 		| Nu(x,tau,f) -> (match (assign_variance {variable = x ; variance = Antitone} l) with 
 							| Some (variance_assignment_list) -> tc f variance_assignment_list
-							| None -> None )(* the variance couldn't be assigned because it wasn't compatible with the previous one *)
-		| _ -> Some(l) 
+							| None -> failwith "Error in variances computation : the formula is ill-typed" )(* the variance couldn't be assigned because it wasn't compatible with the previous one *)
+		| Pre (x) ->
+			(match x with 
+				| PreVariable (s) -> 
+					match assignment s l with 
+							| Some (v) -> Some([{variable = s ; variance = v}])
+							| _ -> None
+				| _ -> None)
+		| Or (f,g) -> (match (tc f l), (tc g l) with
+							| (Some(l1), Some(l2)) -> Some(l1@l2)
+							| (Some(l1), None) -> Some(l1)
+							| (_, _) ->  (tc g l))
+		| And (f,g) -> (match (tc f l), (tc g l) with
+							| (Some(l1), Some(l2)) -> Some(l1@l2)
+							| (Some(l1), None) -> Some(l1)
+							| (_, _) ->  (tc g l))
+		| Diamond (a,f) -> tc f l
+		| Box (a,f) -> tc f l
+		| Lambda (x,v,f) -> (match (assign_variance {variable = x ; variance = v} l) with 
+							| Some (variance_assignment_list) -> tc f variance_assignment_list
+							| None -> failwith "Error in variances computation : the formula is ill-typed")
+		| _ -> failwith "Error in variances computation : the formula is ill-typed"
 	in
 	tc f []
 
