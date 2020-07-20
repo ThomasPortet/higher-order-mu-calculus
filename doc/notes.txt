@@ -1,0 +1,12 @@
+Première étape : grammaire réduite, non polyadique et pas d'ordre supérieure.
+
+Fonctionnalités au 17/07 : 
+- Mise en place de fonctions de manipulation de variances : smaller, inter, composition, not, dual 
+et fonction de calcul de variances nécessaires simples pour formules sans polyadique ni ordre supérieure : variances_needed renvoie une liste de "variance_assignment" qui sont des tuples de variables (string) et de variances correspondant à toutes les variances nécessaires dans la formule en entrée.
+	En effet pour des formules simples on peut déterminer quelle doit être la variance d'une variable dans une formule assez simplement : si 
+elle apparait dans un Mu alors elle doit être Monotone si un nombre pair de négations lui est appliquée (sinon Antitone), si elle apparait dans un Nu, elle sera Antitone sous les mêmes conditions etc ...
+	Pour certaines formules, il n'y a aucune contrainte vis à vis des variances on affiche alors "no variances needed". Pour d'autres, il est 
+impossible de satisfaire les variances rencontrées, c'est par exemple le cas de "formula_untypable" ; dans ce cas-là on renvoie une exception de type Failure avec le message "Error in variances computation : the formula is ill-typed", plus tard on pourrait créer notre propre exception pour laisser le programme tourner quand même sur d'autres formules après un échec. Les intersections et compositions de variance non définies dans la grammaire renvoient une erreur de la même manière pour l'instant.
+
+
+- Pour l'instant les fonctions sont écrites directement dans le fichier "ex.ml" et doivent être écrites avec la grammaire définie, ce n'est donc pas interactif ni intuitif à écrire, il s'agit simplement de permettre des tests rapides. On ne peut pas parser directement des formules issus de fichier .tex, ce qui devra être un objectif par la suite, mais ce n'est pas une priorité pour le moment.

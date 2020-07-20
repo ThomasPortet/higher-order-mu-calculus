@@ -6,8 +6,13 @@ type mu_type =
   | Ground
   | Arrow of mu_type * variance * mu_type
 
+type type_assignment = {
+  variable : var;
+  tau : mu_type
+  }
+
 type predicate = 
-  | PreVariable of var(*     for higher order
+  | PreVariable of var (*     for higher order
   | Transformer of transformer
 
 type transformer =
@@ -15,7 +20,7 @@ type transformer =
 *)
 
 type formula =
-  | True
+  | Top
   | Bottom
   | Diamond of var * (* * int for polyadic * *) formula
   | Box of var * (* * int for polyadic * *) formula

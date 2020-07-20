@@ -16,7 +16,7 @@ type variance  =
 
 type variance_assignment = {
   variable : var;
-  variance : variance;
+  variance : variance
   }
 
 val variance_from_string : string -> variance

@@ -13,10 +13,12 @@ val composition : variance -> variance -> variance
 
 val composition_meet : variance -> variance
 
-val variances_needed : formula -> variance_assignment list option 
+val variances_needed : formula -> (variance_assignment list) option  * (type_assignment list) option
 
 val assignment  : var -> variance_assignment list -> variance option 
 
 val assign_variance : variance_assignment -> variance_assignment list -> variance_assignment list option 
 
 val negated_variances : variance_assignment list -> variance_assignment list
+
+val print_compute_variance : formula -> unit

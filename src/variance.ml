@@ -98,10 +98,10 @@ let rec negated_variances (l : variance_assignment list) : variance_assignment l
 
 (* returns a list of variance assignments needed 
 or None if there are no possible variance assignments of the variables to satisfy the formula's type *)
-let variances_needed (f : formula) : (variance_assignment list) option =
+let variances_needed (f : formula) : (variance_assignment list) option * (type_assignment list) option =
 	let rec tc (form : formula) (l : variance_assignment list) : (variance_assignment list) option =
 	match form with 
-		| True -> Some(l)
+		| Top -> Some(l)
  		| Bottom -> Some(negated_variances l)
  		| Neg(f) -> tc f (negated_variances l)
 		| Mu(x,tau,f) -> (match (assign_variance {variable = x ; variance = Monotone} l) with 
@@ -115,8 +115,7 @@ let variances_needed (f : formula) : (variance_assignment list) option =
 				| PreVariable (s) -> 
 					match assignment s l with 
 							| Some (v) -> Some([{variable = s ; variance = v}])
-							| _ -> None
-				| _ -> None)
+							| _ -> None)
 		| Or (f,g) -> (match (tc f l), (tc g l) with
 							| (Some(l1), Some(l2)) -> Some(l1@l2)
 							| (Some(l1), None) -> Some(l1)
@@ -132,6 +131,13 @@ let variances_needed (f : formula) : (variance_assignment list) option =
 							| None -> failwith "Error in variances computation : the formula is ill-typed")
 		| _ -> failwith "Error in variances computation : the formula is ill-typed"
 	in
-	tc f []
+	(tc f [], None)
 
 
+let print_compute_variance (f : formula) : unit =
+  let vl = variances_needed f in 
+  let s = match vl with 
+    | Some (l),_ -> val_to_string l
+    | None,_ -> "no variances needed"
+  in 
+  let () = print_string (s^"\n") in ()
