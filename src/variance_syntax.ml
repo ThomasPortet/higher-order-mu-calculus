@@ -1,3 +1,5 @@
+type var = string
+
 type variance  =
   | None
   | Any
@@ -11,8 +13,6 @@ type variance  =
   | NMeet
   | NAdditive
 
-
-type var = string
 
 type variance_assignment = {
   variable : var;

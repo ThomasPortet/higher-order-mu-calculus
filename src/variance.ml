@@ -21,7 +21,7 @@ let dual (v : variance) : variance =
   		| NMeet -> NJoin
   		| _ -> v (* ? undefined cases ? *)
 
-let not (v : variance) : variance =
+let not_v (v : variance) : variance =
 	match v with
 		| Monotone -> Antitone
 		| Antitone -> Monotone
@@ -60,12 +60,12 @@ let composition (v1 : variance) (v2 : variance) : variance =
 		| (Any, _) |(_, Any) -> Any
 		| (Monotone, _) -> v2
 		| (_, Monotone) -> failwith ("Error in variances composition : "^(v_to_string v1)^" o "^(v_to_string v2)^" is not defined.")
-		| (Antitone, _) -> (not v2) 
+		| (Antitone, _) -> (not_v  v2) 
 		| (_, Antitone) -> failwith ("Error in variances composition : "^(v_to_string v1)^" o "^(v_to_string v2)^" is not defined.")
 		| (v1, v2) when (in_additive v1) && (in_additive v2) -> inter v1 v2
-		| (v1, v2) when (in_additive (not v1)) && (in_additive v2) -> not (inter (not v1) v2)
-		| (v1, v2) when (in_additive v1) && (in_additive (not v2)) -> not (inter (dual v1) (not v2))
-		| (v1, v2) when (in_additive (not v1)) && (in_additive (not v2)) -> inter (dual (not v1)) (not v2)
+		| (v1, v2) when (in_additive (not_v v1)) && (in_additive v2) -> not_v  (inter (not_v  v1) v2)
+		| (v1, v2) when (in_additive v1) && (in_additive (not_v  v2)) -> not_v  (inter (dual v1) (not_v  v2))
+		| (v1, v2) when (in_additive (not_v  v1)) && (in_additive (not_v  v2)) -> inter (dual (not_v  v1)) (not_v  v2)
 		| _ ->  failwith ("Error in variances composition : this case should never occur !")
 
 (* returns Meet o variance *)
@@ -94,7 +94,7 @@ let assign_variance (va : variance_assignment) (l : variance_assignment list) : 
 let rec negated_variances (l : variance_assignment list) : variance_assignment list =
   match l with 
     | [] -> []
-    | va::l -> {variable = va.variable ; variance = not va.variance}::negated_variances l 
+    | va::l -> {variable = va.variable ; variance = not_v va.variance}::negated_variances l 
 
 (* returns a list of variance assignments needed 
 or None if there are no possible variance assignments of the variables to satisfy the formula's type *)

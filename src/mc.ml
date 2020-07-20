@@ -1,7 +1,7 @@
 open Variance_syntax
-open Frontend
 open Mu_calculus_syntax
 open Variance
+open Mu_calculus
 open Ex
 
 (*

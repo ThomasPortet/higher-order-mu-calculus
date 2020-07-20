@@ -5,7 +5,7 @@ val smaller : variance -> variance -> bool
 
 val dual : variance -> variance
 
-val not : variance -> variance
+val not_v : variance -> variance
 
 val inter : variance -> variance -> variance
 

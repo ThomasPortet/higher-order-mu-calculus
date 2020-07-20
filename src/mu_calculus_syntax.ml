@@ -1,16 +1,12 @@
 open Variance_syntax
 
+
 type var = string
 
 type mu_type = 
   | Ground
   | Arrow of mu_type * variance * mu_type
 
-type type_assignment = {
-  variable : var;
-  tau : mu_type
-  }
-  
 type predicate = 
   | PreVariable of var (*     for higher order
   | Transformer of transformer
@@ -32,3 +28,19 @@ type formula =
   | Nu of var * mu_type * formula (* greatest fix point *) (*
   | Application of transformer * formula list  *)
   | Lambda of var * variance  * formula      (*for higher order*)
+
+type type_assignment = {
+  variable : var;
+  variance : variance;
+  tau : mu_type
+  }
+
+type typing_environment = 
+  type_assignment list
+
+type type_judgment = {
+  gamma : typing_environment;
+  f : formula;
+  tau : mu_type
+}
+
