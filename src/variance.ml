@@ -110,10 +110,8 @@ let variances_needed (f : formula) : (variance_assignment list) option * (type_a
 		| Nu(x,tau,f) -> (match (assign_variance {variable = x ; variance = Antitone} l) with 
 							| Some (variance_assignment_list) -> tc f variance_assignment_list
 							| None -> failwith "Error in variances computation : the formula is ill-typed" )(* the variance couldn't be assigned because it wasn't compatible with the previous one *)
-		| Pre (x) ->
-			(match x with 
-				| PreVariable (s) -> 
-					match assignment s l with 
+		| PreVariable (s) -> 
+						 (match assignment s l with 
 							| Some (v) -> Some([{variable = s ; variance = v}])
 							| _ -> None)
 		| Or (f,g) -> (match (tc f l), (tc g l) with
