@@ -71,6 +71,18 @@ let composition (v1 : variance) (v2 : variance) : variance =
 (* returns Meet o variance *)
 let composition_meet  = composition Meet
 
+(* returns v1^-1 o v2, in other words all the variances v in V | v2 = v1 o v *)
+
+let inverse_variance_composition  (v1 : variance) (v2 : variance) : variance list =
+	let rec test (vl : variance list) : variance list =
+		match vl with
+			| [] -> []
+			| v::l when (composition v1 v) == v2 -> v::(test l)
+			| v::l -> test l
+	in test [None; Any; Monotone; Join; Meet; Additive; Antitone; NJoin; NMeet; NAdditive]
+
+let inverse_meet = inverse_variance_composition Meet
+
 let rec assignment (x : var) (l : variance_assignment list) : variance option =
   match l with
     | [] -> None

@@ -22,3 +22,7 @@ val assign_variance : variance_assignment -> variance_assignment list -> varianc
 val negated_variances : variance_assignment list -> variance_assignment list
 
 val print_compute_variance : formula -> unit
+
+val inverse_variance_composition : variance -> variance -> variance list
+
+val inverse_meet : variance -> variance list
