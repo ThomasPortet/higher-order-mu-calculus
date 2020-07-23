@@ -139,7 +139,6 @@ let variances_needed (f : formula) : (variance_assignment list) option * (type_a
 		| Lambda (x,v,f) -> (match (assign_variance {variable = x ; variance = v} l) with 
 							| Some (variance_assignment_list) -> tc f variance_assignment_list
 							| None -> failwith "Error in variances computation : the formula is ill-typed")
-		| _ -> failwith "Error in variances computation : the formula is ill-typed"
 	in
 	(tc f [], None)
 

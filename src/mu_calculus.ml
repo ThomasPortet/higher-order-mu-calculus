@@ -29,12 +29,9 @@ let rec replace_type_assignment  (gamma : typing_environment) (ta : type_assignm
     | t::g when (t.phi == ta.phi) -> ta::g 
     | t::g -> t::(replace_type_assignment g ta)
 
-let composition_assignment (v : variance) (ta : type_assignment) : type_assignment =  
-  {phi = ta.phi; variance = (composition v ta.variance); tau = ta.tau}
-
 (* returns gamma' = v o gamma *)
 let composition_environment (v : variance) (gamma : typing_environment) : typing_environment =
-  List.map (composition_assignment v) gamma
+  List.map (fun  (ta : type_assignment) -> {phi = ta.phi; variance = (composition v ta.variance); tau = ta.tau})  gamma
 
 let inverse_assignment (v : variance) (ta : type_assignment) : type_assignment list = 
   let rec filter_variance (vl : variance list) : type_assignment list =
@@ -56,11 +53,9 @@ let inverse_environment (v : variance) (gamma : typing_environment) : typing_env
         | [] -> []
         | tal::invl -> match tal with 
                           | [] -> []
-                        | ta::tala -> (cons_list_list ta (filter_assignments invl))@(filter_assignments (tala::invl))
+                          | ta::l -> (cons_list_list ta (filter_assignments invl))@(filter_assignments (l::invl))
 
     in filter_assignments (filter_gamma gamma)
-
-
 
 
 (* returns the negated typing environment of gamma *)
@@ -70,22 +65,28 @@ let rec not_e (gamma : typing_environment) : typing_environment =
     | ta::g -> {phi = ta.phi ; variance = not_v ta.variance; tau = ta.tau}::not_e g 
 
 
-let rec type_inference (gamma : typing_environment) (phi : formula) : mu_type =
+let rec type_inference (gamma : typing_environment) (input_formula : formula) : mu_type =
   let rec filter_gammas (gammas : typing_environment list ) (phi : formula) : mu_type =
     match gammas with
-      | [] -> failwith " untypable "
-      | gamma :: gamma_list -> type_inference gamma phi (*TODO UNION*)
+      | [] -> Untypable
+      | gamma :: gamma_list -> let tau = type_inference gamma phi in 
+                               match tau with 
+                                  | Untypable -> filter_gammas gamma_list phi
+                                  | _ -> tau (* we only care about finding any type for now *)
     in
-    match phi with
+    match input_formula with
       | Top -> Ground
-      | Bottom -> type_inference (not_e gamma) phi 
-      | Diamond (a, psi) -> filter_gammas (inverse_environment Meet gamma) phi (*
-      | Box of var *formula
-      | And of formula * formula
-      | Or of formula * formula
-      | Neg of formula
-      | Pre of predicate
-      | Mu of var * mu_type * formula 
+      | Neg (phi) -> type_inference (not_e gamma) phi 
+      | Bottom -> type_inference gamma (Neg Top) 
+      | Diamond (a, phi) -> filter_gammas (inverse_environment Meet gamma) phi 
+      | Box (a, phi) -> type_inference gamma (Neg (Diamond (a, Neg(phi)))) 
+      | And (phi, psi) -> (match (type_inference gamma phi, type_inference gamma psi) with 
+                            | Ground, Ground -> Ground  
+                            | Untypable, _ | _, Untypable | _,_ -> Untypable )(* there isn't a product type so there can't be a (t^v -> t)* Ground type for instance *)
+      | Or (phi, psi) -> type_inference gamma (Neg (And (Neg(phi), Neg(psi))))(*
+      
+      | Pre (x) -> 
+      | Mu (x,tau,phi) -> 
       | Nu of var * mu_type * formula 
       | Application of transformer * formula list  
       

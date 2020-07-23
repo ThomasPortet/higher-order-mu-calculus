@@ -7,6 +7,7 @@ type mu_type =
   | Ground
   | Arrow of mu_type * variance * mu_type
   | Parameter of string
+  | Untypable
 
 (*
   | Transformer of transformer

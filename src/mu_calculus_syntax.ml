@@ -7,6 +7,7 @@ type mu_type =
   | Ground
   | Arrow of mu_type * variance * mu_type
   | Parameter of string
+  | Untypable
 
 (*
   | Transformer of transformer
@@ -49,6 +50,7 @@ let rec t_to_string (tau : mu_type) : string =
     | Ground -> "Ground"
     | Arrow (tau1, v, tau2) -> t_to_string tau1 ^ " " ^ v_to_string v ^ " -> " ^ t_to_string tau2
     | Parameter (s) -> s
+    | Untypable -> "Untypable"
 
 
 let rec f_to_string (phi : formula) : string =
