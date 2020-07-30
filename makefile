@@ -1,5 +1,5 @@
 all: src/*
-	ocamlbuild src/mc.byte
+	ocamlbuild -tag debug src/mc.byte
 
 .PHONY: clean
 clean:

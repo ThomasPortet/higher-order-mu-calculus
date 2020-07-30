@@ -7,13 +7,15 @@ val dual : variance -> variance
 
 val not_v : variance -> variance
 
+val in_additive : variance -> bool
+
 val inter : variance -> variance -> variance
 
 val composition : variance -> variance -> variance
 
 val composition_meet : variance -> variance
 
-val variances_needed : formula -> (variance_assignment list) option  * (type_assignment list) option
+val variances_needed : formula -> (variance_assignment list) option 
 
 val assignment  : var -> variance_assignment list -> variance option 
 
@@ -26,3 +28,5 @@ val print_compute_variance : formula -> unit
 val inverse_variance_composition : variance -> variance -> variance list
 
 val inverse_meet : variance -> variance list
+
+val bigger_variances : variance -> variance list

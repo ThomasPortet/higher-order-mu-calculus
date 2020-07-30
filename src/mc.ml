@@ -32,14 +32,46 @@ let () = if Option.(!composition) then
   let v2 = Variance_syntax.variance_from_string s2 in
   let v = Variance.composition v1 v2 in
   let s = v_to_string v in 
-  let () = print_string (s^"\n") in ()
-
+  print_string (s^"\n")
 
 let () = if Option.(!compute_variance_simple) then 
-  print_compute_variance formula_simple
+  let f = desugar formula_simple in 
+  begin 
+  print_string ((f_to_string f)^"\n") ;
+  print_compute_variance f
+  end
 
-let () = if Option.(!compute_variance_untypable) then 
-  print_compute_variance formula_untypable
+let () = if Option.(!compute_variance_untypable) then
+let f = desugar formula_untypable in 
+  begin 
+  print_string ((f_to_string f)^"\n") ;
+  print_compute_variance f
+  end 
 
 let () = if Option.(!compute_variance_lambda) then 
-  print_compute_variance formula_lambda
+let f = desugar formula_lambda in 
+  begin 
+  print_string ((f_to_string f)^"\n") ;
+  print_compute_variance f
+  end 
+
+let () = if Option.(!type_inference_simple) then 
+ let f = desugar formula_simple in 
+  begin 
+  print_string ((f_to_string f)^"\n") ;
+  print_infered_type f
+  end
+
+let () = if Option.(!type_inference_untypable) then 
+  let f = desugar formula_untypable in 
+  begin 
+  print_string ((f_to_string f)^"\n") ;
+  print_infered_type f
+  end
+
+let () = if Option.(!type_inference_lambda) then 
+  let f = desugar formula_lambda in 
+  begin 
+  print_string ((f_to_string f)^"\n") ;
+  print_infered_type f
+  end
