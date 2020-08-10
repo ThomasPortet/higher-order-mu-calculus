@@ -75,7 +75,7 @@ let inverse_variance_composition  (v1 : variance) (v2 : variance) : variance lis
 			| [] -> []
 			| v::l when (composition v1 v) == v2 -> v::(test l)
 			| v::l -> test l
-	in test [None; Any; Monotone; Join; Meet; Additive; Antitone; NJoin; NMeet; NAdditive]
+	in test all_variances
 
 (* returns a list containing all variances bigger than v *)
 let bigger_variances (v : variance) :variance list =
@@ -84,7 +84,7 @@ let bigger_variances (v : variance) :variance list =
 			| [] -> []
 			| v1::l when (smaller v v1) -> v1::(test l)
 			| v1::l -> test l
-	in test [None; Any; Monotone; Join; Meet; Additive; Antitone; NJoin; NMeet; NAdditive]
+	in test all_variances
 
 let greatest_smaller_variances  (v1 : variance) (v2 : variance) : variance =
 	let rec test (vl : variance list) : variance =
@@ -92,7 +92,7 @@ let greatest_smaller_variances  (v1 : variance) (v2 : variance) : variance =
 			| [] -> Any
 			| v::l when (smaller v v1) && (smaller v v2) -> v
 			| v::l -> test l
-	in test [None; NAdditive; Additive; NJoin; NMeet; Join; Meet; Monotone; Antitone; Any]
+	in test all_variances
 
 let inverse_meet = inverse_variance_composition Meet
 

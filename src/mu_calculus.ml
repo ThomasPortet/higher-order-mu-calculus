@@ -111,6 +111,16 @@ let rec type_inference (gamma : typing_environment) (input_formula : formula) : 
                                   | Untypable ->  filter_gammas gamma_list phi
                                   | _ ->  tau (* we only care about finding any type for now *)
     in
+  let rec filter_variances_lambda (vl : variance list) (gamma : typing_environment) (x : var) (phi : formula) : mu_type = 
+    match vl with
+      | [] -> Untypable
+      | v :: l -> let new_gamma = replace_type_assignment gamma {phi = PreVariable(x); variance = v; tau = Ground} in
+                  match type_inference new_gamma phi with 
+                    | Untypable -> filter_variances_lambda l gamma x phi
+                    | tau -> tau
+
+
+    in
     let rec filter_appl_pairs (pairs : (typing_environment * typing_environment) list) (f : formula) (phi : formula) : mu_type = 
               match pairs with
                  | [] -> Untypable
@@ -143,8 +153,9 @@ let rec type_inference (gamma : typing_environment) (input_formula : formula) : 
                               | Ground, _ -> let new_gamma = replace_type_assignment gamma {phi = PreVariable(f); variance = Monotone; tau = t} in type_inference new_gamma phi
                               | _, _ -> let new_gamma = replace_type_assignment gamma {phi = PreVariable(f); variance = Monotone; tau = t} in type_inference new_gamma phi )
       | Lambda (x, v, phi) -> (match (get_variable_assignment gamma x) with
-                      | None -> let new_gamma = replace_type_assignment gamma {phi = PreVariable(x); variance = v; tau = Ground} in
-                                let tau = type_inference new_gamma phi in Arrow (Ground, v, tau)
+                      | None -> (match (filter_variances_lambda all_variances gamma x phi) with 
+                                  | Untypable -> Untypable
+                                  | tau -> Arrow (Ground, v, tau))
                       | _ -> Untypable ) (* x is supposed to be a new variable *)
       | Application (f ,phi) -> 
         let gammas = bigger_environments gamma in 
@@ -152,6 +163,17 @@ let rec type_inference (gamma : typing_environment) (input_formula : formula) : 
               filter_appl_pairs gamma_pairs f phi
                                             
 
+(* gives an assignment to every free variable *)
+let rec decorate (f : formula) (varl : var list) : typing_environment =
+  match f with
+      | Top -> []
+      | And (phi, psi) -> let te1,te2 = decorate phi varl, decorate psi varl in te1@te2
+      | PreVariable (x) -> if (List.exists (fun e -> (String.equal e x)) varl) then
+                      [] else [{phi =  PreVariable (x); variance = Any; tau = Ground}]
+      | Mu (x, _, phi) | Lambda (x, _, phi) -> decorate phi (x::varl)
+      | Neg (phi) | Diamond (_, phi) | Application (_ ,phi) -> decorate phi varl
+
 let print_infered_type (f : formula) : unit =
-  let tau = type_inference [{phi =  PreVariable ("p"); variance = Any; tau = Ground}] f in 
+  let gamma_decorate = decorate f [] in 
+  let tau = type_inference gamma_decorate f in 
   print_string ((t_to_string tau)^"\n")
