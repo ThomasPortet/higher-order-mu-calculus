@@ -89,7 +89,7 @@ let  bigger_environments (gamma : typing_environment) : typing_environment list 
   in
   let rec filter_assignments (inv_list : type_assignment list list) : typing_environment list =
       match inv_list with 
-        | [] -> []
+        | [] -> [[]]
         | tal::invl -> match tal with 
                           | [] -> []
                           | ta::l -> (cons_list_list ta (filter_assignments invl))@(filter_assignments (l::invl))
@@ -113,8 +113,9 @@ let rec type_inference (gamma : typing_environment) (input_formula : formula) : 
     in
   let rec filter_variances_lambda (vl : variance list) (gamma : typing_environment) (x : var) (phi : formula) : mu_type = 
     match vl with
-      | [] -> Untypable
+      | [] ->  Untypable
       | v :: l -> let new_gamma = replace_type_assignment gamma {phi = PreVariable(x); variance = v; tau = Ground} in
+                 
                   match type_inference new_gamma phi with 
                     | Untypable -> filter_variances_lambda l gamma x phi
                     | tau -> tau
@@ -126,7 +127,7 @@ let rec type_inference (gamma : typing_environment) (input_formula : formula) : 
                  | [] -> Untypable
                  | (gamma1,vgamma2) :: g -> let arrt = type_inference gamma1 f in 
                                                 match arrt with 
-                                                | Arrow (Ground, v, tau) -> let rec filter_gamma_twos (gammas : typing_environment list) : mu_type =
+                                                | Arrow (Ground, v, tau) ->  let rec filter_gamma_twos (gammas : typing_environment list) : mu_type =
                                                                                 match gammas with 
                                                                                     | [] -> filter_appl_pairs g f phi
                                                                                     | gamma2::gl -> match (type_inference gamma2 phi) with
@@ -136,7 +137,7 @@ let rec type_inference (gamma : typing_environment) (input_formula : formula) : 
                                                                             let gammatwos = inverse_environment v vgamma2 in
                                                                             filter_gamma_twos gammatwos
 
-                                                | _-> filter_appl_pairs g f phi
+                                                | tau->  filter_appl_pairs g f phi
     in
     match input_formula with
       | Top -> Ground
@@ -144,12 +145,12 @@ let rec type_inference (gamma : typing_environment) (input_formula : formula) : 
       | Diamond (a, phi) -> filter_gammas (inverse_environment Meet gamma) phi 
       | And (phi, psi) -> let tau1,tau2 = type_inference gamma phi, type_inference gamma psi in (match (tau1,tau2)with 
                             | Ground, Ground -> Ground  
-                            | _,_ ->  failwith "And" ) (* there isn't a product type so there can't be a t1 * t2 type for instance, the only way to type the 'and' is if both have a ground type *)
+                            | _,_ ->  Untypable ) (* there isn't a product type so there can't be a t1 * t2 type for instance, the only way to type the 'and' is if both have a ground type *)
       | PreVariable (x) -> (match (get_variable_assignment gamma x) with
                       | Some (ta)  -> ta.tau
-                      | _ -> failwith "Var") (* there shouldn't be any free variable at this point *)
+                      | _ ->  Untypable) (* there shouldn't be any free variable at this point *)
       | Mu (f, t, phi) -> (match (t, get_variable_assignment gamma f) with
-                              | _, Some(ta) ->  failwith "Mu"(* f should be a new transformer or a new predicate variable *)
+                              | _, Some(ta) ->  Untypable(* f should be a new transformer or a new predicate variable *)
                               | Ground, _ -> let new_gamma = replace_type_assignment gamma {phi = PreVariable(f); variance = Monotone; tau = t} in type_inference new_gamma phi
                               | _, _ -> let new_gamma = replace_type_assignment gamma {phi = PreVariable(f); variance = Monotone; tau = t} in type_inference new_gamma phi )
       | Lambda (x, v, phi) -> (match (get_variable_assignment gamma x) with
@@ -158,7 +159,7 @@ let rec type_inference (gamma : typing_environment) (input_formula : formula) : 
                                   | tau -> Arrow (Ground, v, tau))
                       | _ -> Untypable ) (* x is supposed to be a new variable *)
       | Application (f ,phi) -> 
-        let gammas = bigger_environments gamma in 
+          let gammas = bigger_environments gamma in 
           let gamma_pairs = permutation_pairs gammas gammas in (*contains all the pairs gamma1, vgamma2 st gamma <= gamma1 and gamma <= vgamma2 *)
               filter_appl_pairs gamma_pairs f phi
                                             
@@ -172,6 +173,7 @@ let rec decorate (f : formula) (varl : var list) : typing_environment =
                       [] else [{phi =  PreVariable (x); variance = Any; tau = Ground}]
       | Mu (x, _, phi) | Lambda (x, _, phi) -> decorate phi (x::varl)
       | Neg (phi) | Diamond (_, phi) | Application (_ ,phi) -> decorate phi varl
+
 
 let print_infered_type (f : formula) : unit =
   let gamma_decorate = decorate f [] in 

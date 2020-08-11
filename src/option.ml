@@ -18,6 +18,7 @@ let type_inference_untypable = ref false
 
 let type_inference_lambda = ref false
 
+let type_inference_two_lambdas = ref false
 
 let () = Arg.parse
     [
@@ -29,7 +30,7 @@ let () = Arg.parse
      "-type_inference_simple", Set(type_inference_simple), "compute the type of the simple formula in ex.ml";
      "-type_inference_untypable", Set(type_inference_untypable), "compute the type of the untypable formula in ex.ml";
      "-type_inference_lambda", Set(type_inference_lambda), "compute the type of the lambda formula in ex.ml";
-
+     "-type_inference_two_lambdas", Set(type_inference_two_lambdas), "compute the type of the two-lambdas formula in ex.ml";
 ]
 
 (fun filename -> in_channel := open_in filename)
