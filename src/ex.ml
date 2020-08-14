@@ -12,4 +12,5 @@ let formula_lambda : sugared_formula =
 Mu("F", Arrow(Ground, Any, Ground), Lambda("X", Any, (And(PreVariable ("X"), Application((PreVariable ("F"), Diamond("a",PreVariable ("X"))))))))
 
 let formula_two_lambdas : sugared_formula = 
-Application(Mu("F", Arrow(Ground, Any, Ground), Lambda("Y", Any, ((Or(PreVariable ("Y"), Application((PreVariable ("F"),Diamond("b",PreVariable ("Y"))))))))), PreVariable("acc")) 
+Application(Nu("E", Arrow(Ground, Any, Ground), Lambda("X", Any, (And(PreVariable("X"), Application(PreVariable("E"), Diamond("a",PreVariable("X"))))))) , Application(Mu("F", Arrow(Ground, Any, Ground), Lambda("Y", Any, ((Or(PreVariable ("Y"), Application((PreVariable ("F"),Diamond("b",PreVariable ("Y"))))))))), PreVariable("acc"))) 
+

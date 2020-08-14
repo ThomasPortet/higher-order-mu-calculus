@@ -1,1 +1,0 @@
-mu(F , (lambda((X,Y) , (X ^ Y) u (F (<a> X, <b> Y)) )))

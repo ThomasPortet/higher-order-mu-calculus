@@ -2,7 +2,6 @@ open Variance_syntax
 
 
 type var = string
-type transformer = string
 
 type mu_type =
   | Ground
