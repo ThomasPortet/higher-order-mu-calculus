@@ -20,7 +20,7 @@ type sugared_formula =
   | PreVariable of var
   | Mu of var * mu_type * sugared_formula (* smallest fix point *)
   | Nu of var * mu_type * sugared_formula (* greatest fix point *) 
-  | Lambda of var * variance  * sugared_formula      (*for higher order*) 
+  | Lambda of var * sugared_formula      (*for higher order*) 
   | Application of sugared_formula * sugared_formula
 
 
@@ -31,7 +31,7 @@ type formula =
   | Diamond of var * (* * int for polyadic * *) formula
   | PreVariable of var
   | Mu of var * mu_type * formula (* smallest fix point *)
-  | Lambda of var * variance  * formula      (*for higher order*) 
+  | Lambda of var * formula      (*for higher order*) 
   | Application of formula * formula
 
 

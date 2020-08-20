@@ -20,6 +20,8 @@ let type_inference_lambda = ref false
 
 let type_inference_two_lambdas = ref false
 
+let type_inference_paper = ref false
+
 let () = Arg.parse
     [
      "-composition", Set(composition), "composes two variances";
@@ -31,6 +33,7 @@ let () = Arg.parse
      "-type_inference_untypable", Set(type_inference_untypable), "compute the type of the untypable formula in ex.ml";
      "-type_inference_lambda", Set(type_inference_lambda), "compute the type of the lambda formula in ex.ml";
      "-type_inference_two_lambdas", Set(type_inference_two_lambdas), "compute the type of the two-lambdas formula in ex.ml";
+     "-type_inference_paper", Set(type_inference_paper), "compute the type of the formula given as exameple in the paper in ex.ml";
 ]
 
 (fun filename -> in_channel := open_in filename)

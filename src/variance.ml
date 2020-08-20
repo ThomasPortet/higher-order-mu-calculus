@@ -46,12 +46,9 @@ let in_Nadditive (v : variance) : bool =
 let inter (v1 : variance) (v2 : variance) : variance =
 	match (v1, v2) with
 		| (v1,v2) when v1 == v2 -> v1
+		| (Additive, v) | (v, Additive) -> v
 		| (v1,v2) when not ((in_additive v1) && (in_additive v2)) -> failwith ("Error in variances intersection : "^(v_to_string v1)^" ^ "^(v_to_string v2)^" is not defined.")
-		| (Monotone,v) | (v, Monotone) -> v
-		| _,_ -> Additive (* at this point the only possible cases left are the ones 
-							where v1 or v2 is Additive or the ones where v1 = Meet and v2 = Join or the opposite , all of which result in Additive*)
-
-
+		| _,_ -> Monotone 
 (* 
 @raise Failure if v1 o v2 isn't properly defined *)
 let composition (v1 : variance) (v2 : variance) : variance =
@@ -164,7 +161,7 @@ let variances_needed (f : formula) : (variance_assignment list) option  =
 														| Some(a) -> (*let() = print_string ((f_to_string form)^(val_to_string a)) in*) Some(a)
 														| None -> None)
 		| Diamond (a,phi) -> tc phi l
-		| Lambda (x,v,phi) -> (match assign_variance {variable = x ; variance = v} l with 
+		| Lambda (x,phi) -> (match assign_variance {variable = x ; variance = Any} l with 
 							| Some (vl) -> let s = tc phi vl in (match s with
 														| Some(a) -> (*let() = print_string ("Lambda : "^(val_to_string a)) in*) Some(a)
 														| None -> None)

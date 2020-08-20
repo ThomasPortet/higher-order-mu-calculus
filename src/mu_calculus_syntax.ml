@@ -20,7 +20,7 @@ type sugared_formula =
   | PreVariable of var
   | Mu of var * mu_type * sugared_formula (* smallest fix point *)
   | Nu of var * mu_type * sugared_formula (* greatest fix point *) 
-  | Lambda of var * variance  * sugared_formula      (*for higher order*) 
+  | Lambda of var * sugared_formula      (*for higher order*) 
   | Application of sugared_formula * sugared_formula
 
 
@@ -31,7 +31,7 @@ type formula =
   | Diamond of var * (* * int for polyadic * *) formula
   | PreVariable of var
   | Mu of var * mu_type * formula (* smallest fix point *)
-  | Lambda of var * variance  * formula      (*for higher order*) 
+  | Lambda of var  * formula      (*for higher order*) 
   | Application of formula * formula
 
 let rec neg_var (phi : formula) (x : var) : formula =
@@ -42,7 +42,7 @@ let rec neg_var (phi : formula) (x : var) : formula =
     | Diamond (a, phi) -> Diamond (a, neg_var phi x)
     | PreVariable (y) ->  if (String.equal x y) then Neg(phi) else phi
     | Mu (y,tau,phi) -> Mu(y,tau,neg_var phi x)
-    | Lambda (y,v,phi) -> Lambda (y, v, neg_var phi x)
+    | Lambda (y, phi) -> Lambda (y, neg_var phi x)
     | Application (phi,psi) -> Application(neg_var phi x, psi)
 
 let rec desugar (sf : sugared_formula) : formula =
@@ -57,7 +57,7 @@ let rec desugar (sf : sugared_formula) : formula =
   | PreVariable (x) -> PreVariable(x)
   | Mu (x,t,phi) -> Mu (x, t, desugar phi)
   | Nu (x,t,phi) -> Neg (Mu (x, t, Neg( neg_var (desugar phi) x)))
-  | Lambda (x,v,phi) ->  Lambda (x, v, desugar phi)
+  | Lambda (x,phi) ->  Lambda (x, desugar phi)
   | Application (phi,psi) -> Application (desugar phi, desugar psi)
     
 
@@ -97,7 +97,7 @@ let rec sf_to_string (phi : sugared_formula) : string =
     | PreVariable (x) -> x
     | Mu (f, tau, psi) -> "Mu "^ f ^":"^ t_to_string tau ^".("^ sf_to_string psi^")"
     | Nu (f, tau, psi) -> "Nu "^ f ^":"^ t_to_string tau ^"."^ sf_to_string psi
-    | Lambda (x, v, psi) -> "Lambda " ^ x ^ v_to_string v ^ " : Ground ." ^ sf_to_string psi
+    | Lambda (x, psi) -> "Lambda " ^ x  ^ " : Ground ." ^ sf_to_string psi
     | Application (f, psi) -> sf_to_string f ^ sf_to_string psi
 
 let rec f_to_string (phi : formula) : string =
@@ -108,7 +108,7 @@ let rec f_to_string (phi : formula) : string =
     | Neg (psi) -> "!(" ^ f_to_string psi^")"
     | PreVariable (x) -> x
     | Mu (f, tau, psi) -> "Mu "^ f ^":"^ t_to_string tau ^".("^ f_to_string psi^")"
-    | Lambda (x, v, psi) -> "Lambda " ^ x ^ v_to_string v ^ " : Ground ." ^ f_to_string psi
+    | Lambda (x, psi) -> "Lambda " ^ x ^ " : Ground ." ^ f_to_string psi
     | Application (f, psi) -> f_to_string f ^ f_to_string psi
 
 

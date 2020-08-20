@@ -82,3 +82,10 @@ let () = if Option.(!type_inference_two_lambdas) then
   print_string ((f_to_string f)^"\n") ;
   print_infered_type f
   end
+
+let () = if Option.(!type_inference_paper) then 
+  let f = desugar formula_paper in 
+  begin 
+  print_string ((f_to_string f)^"\n") ;
+  print_infered_type f
+  end

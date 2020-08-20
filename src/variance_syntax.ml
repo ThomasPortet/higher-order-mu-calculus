@@ -56,4 +56,4 @@ let rec val_to_string (l : variance_assignment list) : string =
     | va::l -> va_to_string va ^ "\n" ^ val_to_string l
 
 let all_variances : variance list = 
-  [Any; None; NAdditive; Additive; NJoin; NMeet; Join; Meet; Monotone; Antitone]
+  [None ;NAdditive; Additive; NJoin;Any ;NMeet; Join; Meet; Monotone; Antitone]
